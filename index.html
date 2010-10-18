@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      Storage.prototype._oldSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(key, value) { 
+        return this._oldSetItem(key, value);
+      };
+      localStorage.setItem('foo', 'bar');
+    </script>
+  </head>
+  <body> 
+
+  </body>
+</html>
