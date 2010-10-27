@@ -1,11 +1,30 @@
 <html>
   <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+    <script type="text/javascript" src="jquery.couch.js"></script>
     <script type="text/javascript">
       Storage.prototype._oldSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = function(key, value) { 
+      Storage.prototype.setItem = function(key, value)
+      {
+        $.couch.urlPrefix = '/db';
+        var db = $.couch.db('jquery');
+
+        if(!value)
+        {
+          //TODO get the doc by key and delete it (we need the _rev)      
+        }
+        else if(typeof value == "object")
+        {
+          if(!value._id)
+          {
+            value._id = key;
+            db.saveDoc(value);
+          }
+        }
+
         return this._oldSetItem(key, value);
       };
-      localStorage.setItem('foo', 'bar');
+      localStorage.setItem('foo', {hi: 'there'});
     </script>
   </head>
   <body> 
