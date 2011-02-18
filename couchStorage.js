@@ -17,8 +17,11 @@
 
       if(!value)
       {
-        //TODO get the doc by key and delete it (we need the _rev)      
-        console.log(this.getItem(key));
+        var toDelete = currStorage.getItem(key);
+
+        if(toDelete)
+          db.removeDoc(toDelete);
+
         return null;
       }
       else if(typeof value == "object")
