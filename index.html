@@ -2,54 +2,7 @@
   <head>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
     <script type="text/javascript" src="jquery.couch.js"></script>
-    <script type="text/javascript">
-      Storage.prototype._oldSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = function(key, value)
-      {
-        $.couch.urlPrefix = '/db';
-        var db = $.couch.db('jquery');
-
-        if(!value)
-        {
-          //TODO get the doc by key and delete it (we need the _rev)      
-          console.log(this.getItem(key));
-          return null;
-        }
-        else if(typeof value == "object")
-        {
-          if(!value._id)
-            value._id = key;
-
-          var that = this;
-          db.saveDoc(
-            value, 
-            {
-              success: function(resp) {
-                value._rev = resp.rev;
-                return that._oldSetItem(key, JSON.stringify(value)); 
-              }
-            }
-          );
-
-          return undefined;
-        }
-
-        return this._oldSetItem(key, value);
-      };
-      Storage.prototype._oldGetItem = Storage.prototype.getItem;
-      Storage.prototype.getItem = function(key)
-      {
-        var value = this._oldGetItem(key);
-        try
-        {
-          return JSON.parse(value);
-        }
-        catch(e)
-        {
-          return value;
-        }
-      };
-    </script>
+    <script type="text/javascript" src="couchStorage.js"></script>
   </head>
   <body> 
 
