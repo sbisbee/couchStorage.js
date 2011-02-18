@@ -23,8 +23,11 @@
       }
       else if(typeof value == "object")
       {
-        if(!value._id)
-          value._id = key;
+        value._id = key;
+
+        var prevLocalCopy = currStorage.getItem(key);
+        if(prevLocalCopy && prevLocalCopy._rev)
+          value._rev = prevLocalCopy._rev;
 
         db.saveDoc(
           value, 
