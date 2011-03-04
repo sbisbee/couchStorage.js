@@ -4,7 +4,12 @@
     <script type="text/javascript" src="jquery.couch.js"></script>
     <script type="text/javascript" src="couchStorage.js"></script>
     <script type="text/javascript">
-    couchStorage.start();
+    run = function()
+    {
+      var key = Math.round((new Date()).getTime() / 1000);
+      couchStorage.setItem(key, {hi: 123});
+      couchStorage.writeTo(localStorage);
+    }
     </script>
   </head>
   <body> 
