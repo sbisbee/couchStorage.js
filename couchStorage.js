@@ -1,11 +1,16 @@
 var couchStorage = (function()
 {
-  var 
-      //our storage device where we, uh, store things
-      dataCylinder = {},
+  $.couch.urlPrefix = '/db';
 
-      //the key to use when writing to and reading from Storage objects
-      BROWSER_STORAGE_KEY = "couchStorage";
+  var 
+    //our storage device where we, uh, store things
+    dataCylinder = {},
+
+    //the key to use when writing to and reading from Storage objects
+    BROWSER_STORAGE_KEY = "couchStorage",
+
+    //the couchdb library we're using
+    couchdb = $.couch.db('jquery');
 
   return {
     /*
@@ -16,9 +21,6 @@ var couchStorage = (function()
      */
     setItem: function(key, value)
     {
-      $.couch.urlPrefix = '/db';
-      var db = $.couch.db('jquery');
-
       if(value === null)
       {
         dataCylinder[key] = null;
@@ -34,7 +36,7 @@ var couchStorage = (function()
         if(prevLocalCopy && prevLocalCopy._rev)
           value._rev = prevLocalCopy._rev;
 
-        db.saveDoc(
+        couchdb.saveDoc(
           value, 
           {
             success: function(resp) {
@@ -51,15 +53,28 @@ var couchStorage = (function()
     /*
      * Returns the item from our local storage. If it is not found, then we try
      * to get the item from CouchDB, storing it locally if we succeed.
+     *
+     * Calls to CouchDB are done synchronously, which means that THIS FUNCTION
+     * BLOCKS!!!!!!
      */
     getItem: function(key)
     {
-      if(dataCylinder[key])
-        return dataCylinder[key];
+      if(!dataCylinder[key])
+      {
+        couchdb.openDoc(
+          key,
+          {
+            success: function(resp) {
+              dataCylinder[key] = resp;
+            },
+          },
+          {
+            async: false
+          }
+        );
+      }
 
-      //TODO try to get the item from couchdb
-
-      return null;
+      return dataCylinder[key];
     },
 
     /*
