@@ -78,6 +78,31 @@ var couchStorage = (function()
     },
 
     /*
+     * The same as getItem(), except it also takes a callback because it makes
+     * an asynchronous AJAX call (no blocking). The success callback will be
+     * passed the value to its first parameter. If the value was retrieved
+     * using AJAX, meaning that it was not available locally, then the second
+     * parameter will be the server's response as you would get in the AJAX's
+     * success function.
+     */
+    getItemAsync: function(key, success)
+    {
+      if(!dataCylinder[key])
+        couchdb.openDoc(
+                        key,
+                        {
+                          success: function(resp) {
+                            dataCylinder[key] = resp;
+
+                            success(dataCylinder[key], resp);
+                          }
+                        }
+                      );
+      else
+        success(dataCylinder[key]);
+    },
+
+    /*
      * Attempt to copy our internal data structure into the passed Storage
      * object (ex., localStorage), allowing ourselves to be persisted. If
      * passing your own object, then make sure it implements getItem() and
