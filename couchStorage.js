@@ -79,12 +79,14 @@ var couchStorage = (function()
 
     /*
      * Attempt to copy our internal data structure into the passed Storage
-     * object (ex., localStorage), allowing ourselves to be persisted.
+     * object (ex., localStorage), allowing ourselves to be persisted. If
+     * passing your own object, then make sure it implements getItem() and
+     * setItem().
      */
     writeTo: function(storage)
     {
-      if(typeof storage != 'object' || !storage.setItem)
-        throw new Error('Unsupported storage type.');
+      if(!storage.setItem)
+        throw new Error('Unsupported storage type - must implement setItem().');
 
       storage.setItem(BROWSER_STORAGE_KEY, JSON.stringify(dataCylinder));
 
@@ -93,12 +95,13 @@ var couchStorage = (function()
 
     /*
      * Attempt to read an internal data structure representation from the
-     * passed Storage object (ex., localStorage).
+     * passed Storage object (ex., localStorage). If passing your own object,
+     * then make sure it implements getItem() and setItem().
      */
     readFrom: function(storage)
     {
-      if(typeof storage != 'object' || !storage.getItem)
-        throw new Error('Unsupported storage type.');
+      if(!storage.getItem)
+        throw new Error('Unsupported storage type - must implement getItem().');
 
       dataCylinder = JSON.parse(storage.getItem(BROWSER_STORAGE_KEY));
 
