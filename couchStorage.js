@@ -16,38 +16,25 @@ var couchStorage = (function()
     /*
      * Acts just like Storage.setItem, except it also tries to persist the
      * object into CouchDB using the key as the document's _id.
-     *
-     * Only accepts objects for values.
      */
     setItem: function(key, value)
     {
-      if(value === null)
-      {
-        dataCylinder[key] = null;
+      doc = { _id: key, d: value };
 
-        return null;
-      }
-      else if(typeof value == 'object')
-      {
-        value._id = key;
+      var prevLocalCopy = dataCylinder[key];
 
-        var prevLocalCopy = dataCylinder[key];
+      if(prevLocalCopy && prevLocalCopy._rev)
+        doc._rev = prevLocalCopy._rev;
 
-        if(prevLocalCopy && prevLocalCopy._rev)
-          value._rev = prevLocalCopy._rev;
-
-        couchdb.saveDoc(
-          value, 
-          {
-            success: function(resp) {
-              value._rev = resp.rev;
-              dataCylinder[key] = value;
-            }
+      couchdb.saveDoc(
+        doc,
+        {
+          success: function(resp) {
+            doc._rev = resp.rev;
+            dataCylinder[key] = doc;
           }
-        );
-      }
-      else
-        throw new Error('Invalid type: value must be an object or null.');
+        }
+      );
     },
 
     /*
@@ -65,6 +52,7 @@ var couchStorage = (function()
           key,
           {
             success: function(resp) {
+console.log(resp);
               dataCylinder[key] = resp;
             },
           },
@@ -74,7 +62,7 @@ var couchStorage = (function()
         );
       }
 
-      return dataCylinder[key];
+      return dataCylinder[key].d;
     },
 
     /*
@@ -94,12 +82,12 @@ var couchStorage = (function()
                           success: function(resp) {
                             dataCylinder[key] = resp;
 
-                            success(dataCylinder[key], resp);
+                            success(dataCylinder[key].d, resp);
                           }
                         }
                       );
       else
-        success(dataCylinder[key]);
+        success(dataCylinder[key].d);
     },
 
     /*
