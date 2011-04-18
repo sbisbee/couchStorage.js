@@ -52,7 +52,6 @@ var couchStorage = (function()
           key,
           {
             success: function(resp) {
-console.log(resp);
               dataCylinder[key] = resp;
             },
           },
