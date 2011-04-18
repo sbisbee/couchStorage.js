@@ -1,8 +1,9 @@
 couchStorage.js
 ===============
 
-THIS IS A PROOF OF CONCEPT
+THIS IS A PROOF OF CONCEPT. No, really, this is mostly hot off my brain. Things
+you can not depend on: the API, code, interfaces, and dependencies. Things you
+can depend on: it will sync with CouchDB and obey the Storage interface.
 
 Read couchStorage.js's comments for documentation. Rather, documentation coming
 soon.
-
